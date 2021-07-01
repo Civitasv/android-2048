@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">2048</string>
+    <string name="action_game">游戏</string>
+    <string name="action_user">个人信息</string>
+</resources>
