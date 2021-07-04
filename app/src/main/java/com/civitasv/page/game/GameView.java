@@ -57,7 +57,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
         this.sfh.addCallback(this);
         this.paint = new Paint();
         this.textPaint = new Paint();
-        this.gameManager = new GameManager(size, this);
         this.gap = 20;
         this.bounds = new AnimateRectF[size][size];
         for (int row = 0; row < size; row++) {
@@ -135,10 +134,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
             for (int row = 0, size = gameManager.getGrid().getSize(); row < size; row++) {
                 for (int col = 0; col < size; col++) {
                     Tile tile = tiles[row][col];
-                    RectF rectF = bounds[row][col];
+                    float startX = col * tileWidth + (col + 1) * gap;
+                    float startY = row * tileHeight + (row + 1) * gap;
+                    float endX = (col + 1) * (tileWidth + gap);
+                    float endY = (row + 1) * (tileHeight + gap);
                     if (tile == null) {
                         paint.setColor(Color.parseColor("#cdc1b4"));
-                        canvas.drawRect(rectF, paint);
+                        canvas.drawRect(startX, startY, endX, endY, paint);
                     } else {
                         textPaint.setColor(Color.parseColor("#776e65"));
                         switch (tile.getVal()) {
@@ -185,8 +187,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
                                 textPaint.setColor(Color.parseColor("#f9f6f2"));
                                 break;
                         }
-                        canvas.drawRect(rectF, paint);
-                        canvas.drawText(String.valueOf(tile.getVal()), (rectF.left + rectF.right) / 2, (rectF.top + rectF.bottom + textPaint.getTextSize() - textPaint.descent()) / 2, textPaint);
+                        canvas.drawRect(startX, startY, endX, endY, paint);
+                        canvas.drawText(String.valueOf(tile.getVal()), (startX + endX) / 2, (startY + endY+ textPaint.getTextSize() - textPaint.descent()) / 2, textPaint);
                     }
                 }
             }
@@ -214,7 +216,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
         }
     }
 
-    public GameManager getGameManager() {
-        return gameManager;
+
+    public void setGameManager(GameManager gameManager) {
+        this.gameManager = gameManager;
     }
 }

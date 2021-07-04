@@ -17,7 +17,6 @@ public class GameManager {
     private final int size; // 栅格宽度
 
     private Grid grid;
-    private GameView gameView;
     // 游戏状态
     private boolean over;
     private boolean won;
@@ -31,9 +30,8 @@ public class GameManager {
 
     private OnScoreChangeListener onScoreChangeListener;
 
-    public GameManager(int size, GameView gameView) {
+    public GameManager(int size) {
         this.startTiles = 2;
-        this.gameView = gameView;
         this.size = size;
         setup();
     }
