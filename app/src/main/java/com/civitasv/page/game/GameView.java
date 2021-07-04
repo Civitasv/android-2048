@@ -168,8 +168,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
                     }
                 }
             }
-            // 绘制有数据的格子
-
         } catch (Exception ignore) {
         } finally {
             if (this.canvas != null) {
@@ -192,5 +190,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
                 }
             }
         }
+    }
+
+    public GameManager getGameManager() {
+        return gameManager;
     }
 }

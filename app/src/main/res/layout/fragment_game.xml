@@ -54,6 +54,8 @@
                         android:id="@+id/score_detail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:text="0"
                         android:textColor="#fff"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -82,6 +84,8 @@
                         android:id="@+id/best_score_detail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:text="0"
                         android:textColor="#fff"
                         android:textSize="14sp" />
                 </LinearLayout>

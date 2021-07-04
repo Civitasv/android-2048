@@ -31,7 +31,10 @@ public class GameFragment extends BackHandleFragment {
                 R.layout.fragment_game, container, false);
         gameFragmentViewModel = new ViewModelProvider(requireActivity()).get(GameFragmentViewModel.class);
         // 定义返回回调
-
+        binding.gameView.getGameManager().setOnScoreChangeListener(score -> binding.scoreDetail.setText(String.valueOf(score)));
+        binding.newGame.setOnClickListener(v -> {
+            binding.gameView.getGameManager().restart();
+        });
         return binding.getRoot();
     }
 

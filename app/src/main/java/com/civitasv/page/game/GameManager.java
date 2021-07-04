@@ -1,6 +1,7 @@
 package com.civitasv.page.game;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.civitasv.helper.Orientation;
 import com.civitasv.model.Grid;
@@ -31,6 +32,8 @@ public class GameManager {
     private GameView gameView;
     // 分数
     private int score;
+
+    private OnScoreChangeListener onScoreChangeListener;
 
     public GameManager(int size, GameView gameView) {
         this.gameView = gameView;
@@ -112,6 +115,8 @@ public class GameManager {
                         grid.removeTile(tile);
                         tile.updatePosition(nextPos);
                         this.score += merged.getVal();
+                        if (onScoreChangeListener != null)
+                            onScoreChangeListener.onChange(score);
                     } else {
                         moveTile(tile, data.get("farthest"));
                     }
@@ -182,5 +187,9 @@ public class GameManager {
         res.put("farthest", previous);
         res.put("next", next);
         return res;
+    }
+
+    public void setOnScoreChangeListener(OnScoreChangeListener onScoreChangeListener) {
+        this.onScoreChangeListener = onScoreChangeListener;
     }
 }
