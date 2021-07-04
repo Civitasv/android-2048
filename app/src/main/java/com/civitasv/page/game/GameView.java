@@ -1,22 +1,25 @@
 package com.civitasv.page.game;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 
 import com.civitasv.MainApplication;
 import com.civitasv.helper.Orientation;
+import com.civitasv.model.AnimateRectF;
+import com.civitasv.model.Position;
 import com.civitasv.model.Tile;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.concurrent.TimeUnit;
 
@@ -32,6 +35,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
     private int gap;
     // 每一个格子长宽
     private int tileWidth, tileHeight;
+    // 每一个格子的边界数据
+    private AnimateRectF[][] bounds;
 
     public GameView(Context context) {
         this(context, null);
@@ -47,12 +52,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
     }
 
     private void initView() {
+        int size = 4;
         this.sfh = getHolder();
         this.sfh.addCallback(this);
         this.paint = new Paint();
         this.textPaint = new Paint();
-        this.gameManager = new GameManager(4, this);
+        this.gameManager = new GameManager(size, this);
         this.gap = 20;
+        this.bounds = new AnimateRectF[size][size];
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                bounds[row][col] = new AnimateRectF();
+            }
+        }
         setFocusable(true);
         setKeepScreenOn(true);
         setFocusableInTouchMode(true);
@@ -69,6 +81,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
         int rectangleLength = Math.min(viewHeight, viewWidth);
         this.tileWidth = (rectangleLength - (size + 1) * gap) / size;
         this.tileHeight = (rectangleLength - (size + 1) * gap) / size;
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                float startX = col * tileWidth + (col + 1) * gap;
+                float startY = row * tileHeight + (row + 1) * gap;
+                float endX = (col + 1) * (tileWidth + gap);
+                float endY = (row + 1) * (tileHeight + gap);
+                AnimateRectF rectF = bounds[row][col];
+                rectF.setLeft(startX);
+                rectF.setRight(endX);
+                rectF.setTop(startY);
+                rectF.setBottom(endY);
+            }
+        }
         this.setMeasuredDimension(rectangleLength, rectangleLength);
     }
 
@@ -109,14 +134,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
             Tile[][] tiles = gameManager.getGrid().getNow();
             for (int row = 0, size = gameManager.getGrid().getSize(); row < size; row++) {
                 for (int col = 0; col < size; col++) {
-                    float startX = col * tileWidth + (col + 1) * gap;
-                    float startY = row * tileHeight + (row + 1) * gap;
-                    float endX = (col + 1) * (tileWidth + gap);
-                    float endY = (row + 1) * (tileHeight + gap);
                     Tile tile = tiles[row][col];
+                    RectF rectF = bounds[row][col];
                     if (tile == null) {
                         paint.setColor(Color.parseColor("#cdc1b4"));
-                        canvas.drawRect(startX, startY, endX, endY, paint);
+                        canvas.drawRect(rectF, paint);
                     } else {
                         textPaint.setColor(Color.parseColor("#776e65"));
                         switch (tile.getVal()) {
@@ -163,8 +185,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
                                 textPaint.setColor(Color.parseColor("#f9f6f2"));
                                 break;
                         }
-                        canvas.drawRect(startX, startY, endX, endY, paint);
-                        canvas.drawText(String.valueOf(tile.getVal()), (startX + endX) / 2, (startY + endY + textPaint.getTextSize() - textPaint.descent()) / 2, textPaint);
+                        canvas.drawRect(rectF, paint);
+                        canvas.drawText(String.valueOf(tile.getVal()), (rectF.left + rectF.right) / 2, (rectF.top + rectF.bottom + textPaint.getTextSize() - textPaint.descent()) / 2, textPaint);
                     }
                 }
             }

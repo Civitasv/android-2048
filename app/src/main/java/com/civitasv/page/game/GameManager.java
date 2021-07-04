@@ -1,8 +1,5 @@
 package com.civitasv.page.game;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.civitasv.helper.Orientation;
 import com.civitasv.model.Grid;
 import com.civitasv.model.Position;
@@ -17,10 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 public class GameManager {
-    private int size; // 栅格宽度
+    private final int size; // 栅格宽度
 
     private Grid grid;
-
+    private GameView gameView;
     // 游戏状态
     private boolean over;
     private boolean won;
@@ -29,15 +26,14 @@ public class GameManager {
     // 初始数目
     private final int startTiles;
 
-    private GameView gameView;
     // 分数
     private int score;
 
     private OnScoreChangeListener onScoreChangeListener;
 
     public GameManager(int size, GameView gameView) {
-        this.gameView = gameView;
         this.startTiles = 2;
+        this.gameView = gameView;
         this.size = size;
         setup();
     }
@@ -109,10 +105,10 @@ public class GameManager {
                     Tile next = grid.positionContent(nextPos);
                     if (next != null && next.getVal() == tile.getVal()) {
                         Tile merged = new Tile(nextPos, tile.getVal() * 2);
-                        // 添加这个
-                        grid.insertTile(merged);
                         // 删除之前的
                         grid.removeTile(tile);
+                        // 添加这个
+                        grid.insertTile(merged);
                         tile.updatePosition(nextPos);
                         this.score += merged.getVal();
                         if (onScoreChangeListener != null)

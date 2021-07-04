@@ -1,5 +1,7 @@
 package com.civitasv.model;
 
+import android.graphics.RectF;
+
 /**
  * 每一块瓦片
  */

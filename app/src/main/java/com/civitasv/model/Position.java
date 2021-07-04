@@ -1,5 +1,7 @@
 package com.civitasv.model;
 
+import android.graphics.RectF;
+
 import java.util.Objects;
 
 public class Position {
