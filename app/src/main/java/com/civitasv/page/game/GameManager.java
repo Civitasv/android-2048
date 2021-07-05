@@ -1,5 +1,7 @@
 package com.civitasv.page.game;
 
+import android.content.Context;
+
 import com.civitasv.helper.Orientation;
 import com.civitasv.model.Grid;
 import com.civitasv.model.Position;
@@ -29,6 +31,7 @@ public class GameManager {
     private int score;
 
     private OnScoreChangeListener onScoreChangeListener;
+    private OnStateChangeListener onStateChangeListener;
 
     public GameManager(int size) {
         this.startTiles = 2;
@@ -111,6 +114,10 @@ public class GameManager {
                         this.score += merged.getVal();
                         if (onScoreChangeListener != null)
                             onScoreChangeListener.onChange(score);
+                        if (merged.getVal() == 2048) {
+                            won = true;
+                            onStateChangeListener.onWon(score);
+                        }
                     } else {
                         moveTile(tile, data.get("farthest"));
                     }
@@ -123,6 +130,7 @@ public class GameManager {
             addRandomTile();
             if (!moveAvailable()) {
                 over = true;
+                onStateChangeListener.onFail(score);
             }
         }
     }
@@ -185,5 +193,10 @@ public class GameManager {
 
     public void setOnScoreChangeListener(OnScoreChangeListener onScoreChangeListener) {
         this.onScoreChangeListener = onScoreChangeListener;
+    }
+
+
+    public void setOnStateChangeListener(OnStateChangeListener onStateChangeListener) {
+        this.onStateChangeListener = onStateChangeListener;
     }
 }
