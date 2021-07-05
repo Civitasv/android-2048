@@ -2,7 +2,10 @@ package com.civitasv.model;
 
 import com.civitasv.helper.GridHelper;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,24 +18,6 @@ public class Grid {
     public Grid(int size) {
         this.size = size;
         this.now = new Tile[size][size];
-    }
-
-    /**
-     * 获取一个空的网格
-     */
-    public Tile[][] empty() {
-        return new Tile[this.size][this.size];
-    }
-
-    public Tile[][] fromState(Tile[][] state) {
-        Tile[][] tiles = new Tile[state.length][state[0].length];
-        for (int row = 0, rows = state.length; row < rows; row++) {
-            for (int col = 0, cols = state[0].length; col < cols; col++) {
-                Tile tile = state[row][col];
-                tiles[row][col] = tile == null ? null : new Tile(tile.getPosition(), tile.getVal());
-            }
-        }
-        return tiles;
     }
 
     public Position randomAvailablePosition() {
@@ -95,5 +80,14 @@ public class Grid {
 
     public Tile[][] getNow() {
         return now;
+    }
+
+    @NotNull
+    @Override
+    public String toString() {
+        return "Grid{" +
+                "size=" + size +
+                ", now=" + Arrays.toString(now) +
+                '}';
     }
 }

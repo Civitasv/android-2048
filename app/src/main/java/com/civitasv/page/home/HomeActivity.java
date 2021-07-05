@@ -24,13 +24,5 @@ public class HomeActivity extends BackHandleActivity {
         super.onCreate(savedInstanceState);
         ActivityHomeBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_home);
         HomeActivityViewModel homeActivityViewModel = new ViewModelProvider(this).get(HomeActivityViewModel.class);
-        // 将 bottom menu 与 nav graph 建立链接
-        NavHostFragment navHostFragment =
-                (NavHostFragment) getSupportFragmentManager()
-                        .findFragmentById(R.id.nav_host_fragment);
-        if (navHostFragment != null) {
-            NavController navController = navHostFragment.getNavController();
-            NavigationUI.setupWithNavController(binding.bottom, navController);
-        }
     }
 }

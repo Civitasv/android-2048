@@ -17,4 +17,12 @@ public class GameRecordManager {
     public long getHighest() {
         return sharedPreferences.getLong("highest", 0);
     }
+
+    public void saveNow(long score) {
+        sharedPreferences.edit().putLong("now", score).apply();
+    }
+
+    public long getNow() {
+        return sharedPreferences.getLong("now", 0);
+    }
 }

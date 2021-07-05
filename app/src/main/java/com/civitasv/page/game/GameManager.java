@@ -8,6 +8,7 @@ import com.civitasv.model.Position;
 import com.civitasv.model.Tile;
 import com.civitasv.model.Traversal;
 import com.civitasv.model.Vector;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,15 +29,33 @@ public class GameManager {
     private final int startTiles;
 
     // 分数
-    private int score;
-
+    private long score;
+    private Gson gson;
     private OnScoreChangeListener onScoreChangeListener;
     private OnStateChangeListener onStateChangeListener;
+    private GameStateManager gameStateManager;
+    private GameRecordManager gameRecordManager;
 
-    public GameManager(int size) {
+    public GameManager(Context context, int size) {
         this.startTiles = 2;
         this.size = size;
+        this.gameStateManager = new GameStateManager(context);
+        this.gameRecordManager = new GameRecordManager(context);
+        this.gson = new Gson();
         setup();
+    }
+
+    public GameManager(Context context, Grid grid, boolean over, boolean won, boolean keepPlaying, long score) {
+        this.startTiles = 2;
+        this.size = grid.getSize();
+        this.grid = grid;
+        this.over = over;
+        this.won = won;
+        this.keepPlaying = keepPlaying;
+        this.score = score;
+        this.gameStateManager = new GameStateManager(context);
+        this.gameRecordManager = new GameRecordManager(context);
+        this.gson = new Gson();
     }
 
     public void restart() {
@@ -62,6 +81,11 @@ public class GameManager {
         this.won = false;
         this.keepPlaying = false;
         addStartTiles();
+        this.gameStateManager.saveGameState(gson.toJson(grid));
+        this.gameStateManager.saveOver(over);
+        this.gameStateManager.saveWon(won);
+        this.gameStateManager.saveKeepPlaying(keepPlaying);
+        this.gameRecordManager.saveNow(score);
     }
 
     public void addStartTiles() {
@@ -127,7 +151,13 @@ public class GameManager {
             }
         }
         if (moved) {
+            // save state
             addRandomTile();
+            this.gameStateManager.saveGameState(gson.toJson(grid));
+            this.gameStateManager.saveOver(over);
+            this.gameStateManager.saveWon(won);
+            this.gameStateManager.saveKeepPlaying(keepPlaying);
+            this.gameRecordManager.saveNow(score);
             if (!moveAvailable()) {
                 over = true;
                 onStateChangeListener.onFail(score);

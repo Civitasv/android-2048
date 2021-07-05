@@ -15,12 +15,16 @@ import androidx.lifecycle.ViewModelProvider;
 import com.civitasv.R;
 import com.civitasv.databinding.FragmentGameBinding;
 import com.civitasv.page.base.BackHandleFragment;
+import com.google.gson.Gson;
 
 public class GameFragment extends BackHandleFragment {
     private final String TAG = "FRAGMENT_GAME";
 
     private FragmentGameBinding binding;
     private GameFragmentViewModel gameFragmentViewModel;
+    private GameManager gameManager;
+    private GameStateManager gameStateManager;
+    private GameRecordManager gameRecordManager;
 
     @Nullable
     @Override
@@ -29,22 +33,40 @@ public class GameFragment extends BackHandleFragment {
         binding = DataBindingUtil.inflate(inflater,
                 R.layout.fragment_game, container, false);
         gameFragmentViewModel = new ViewModelProvider(requireActivity()).get(GameFragmentViewModel.class);
+        this.gameStateManager = new GameStateManager(requireContext());
+        this.gameRecordManager = new GameRecordManager(requireContext());
+        binding.bestScoreDetail.setText(String.valueOf(gameRecordManager.getHighest()));
+        if (gameStateManager.getGameState() != null) {
+            this.gameManager = new GameManager(requireContext(), gameStateManager.getGameState(), gameStateManager.getOver(), gameStateManager.getWon(), gameStateManager.getKeepPlaying(), gameRecordManager.getNow());
+            binding.scoreDetail.setText(String.valueOf(gameRecordManager.getNow()));
+        } else
+            this.gameManager = new GameManager(requireContext(), 4);
         GameView gameView = new GameView(requireContext());
-        GameManager gameManager = new GameManager(4);
-        gameManager.setOnScoreChangeListener(score -> binding.scoreDetail.setText(String.valueOf(score)));
+        gameManager.setOnScoreChangeListener(score -> {
+            binding.scoreDetail.setText(String.valueOf(score));
+            if (score > gameRecordManager.getHighest()) {
+                gameRecordManager.saveHighest(score);
+                binding.bestScoreDetail.setText(String.valueOf(score));
+            }
+        });
         gameManager.setOnStateChangeListener(new OnStateChangeListener() {
             @Override
-            public void onWon(int score) {
+            public void onWon(long score) {
                 showDialog("您胜利了，分数为" + score + "，是否继续游戏？", () -> {
                     gameManager.keepPlaying();
                 }, () -> {
+                    if (score > gameRecordManager.getHighest())
+                        gameRecordManager.saveHighest(score);
                     gameManager.restart();
                 });
             }
 
             @Override
-            public void onFail(int score) {
+            public void onFail(long score) {
                 showDialog("游戏结束，您的分数为" + score + "，是否立即重新开始下一局游戏？", () -> {
+                    // 更新最大分数
+                    if (score > gameRecordManager.getHighest())
+                        gameRecordManager.saveHighest(score);
                     gameManager.restart();
                 }, () -> {
                 });
@@ -52,6 +74,7 @@ public class GameFragment extends BackHandleFragment {
         });
         gameView.setGameManager(gameManager);
         binding.newGame.setOnClickListener(v -> {
+            binding.scoreDetail.setText("0");
             gameManager.restart();
         });
         binding.gameContainer.addView(gameView);

@@ -10,11 +10,4 @@
         android:name="com.civitasv.page.game.GameFragment"
         android:label="Game"
         tools:layout="@layout/fragment_game" />
-
-    <fragment
-        android:id="@+id/fragment_user"
-        android:name="com.civitasv.page.user.UserFragment"
-        android:label="User"
-        tools:layout="@layout/fragment_user" />
-
 </navigation>
